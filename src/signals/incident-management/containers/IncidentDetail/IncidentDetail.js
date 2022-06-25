@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (C) 2018 - 2021 Gemeente Amsterdam
-import { useReducer, useEffect, useCallback } from 'react'
+import { useReducer, useEffect, useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Row, Column } from '@amsterdam/asc-ui'
+import { themeSpacing, Row, Column } from '@amsterdam/asc-ui'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -16,10 +16,10 @@ import { patchIncidentSuccess } from 'signals/incident-management/actions'
 import History from 'components/History'
 import reducer, { initialState } from './reducer'
 
+import Attachments from './components/Attachments'
 import ChildIncidents from './components/ChildIncidents'
 import DetailHeader from './components/DetailHeader'
 import MetaList from './components/MetaList'
-import AddNote from './components/AddNote'
 import LocationForm from './components/LocationForm'
 import AttachmentViewer from './components/AttachmentViewer'
 import Detail from './components/Detail'
@@ -44,9 +44,14 @@ import {
   SET_HISTORY,
   SET_INCIDENT,
 } from './constants'
+import useUpload from './hooks/useUpload'
 
 const StyledRow = styled(Row)`
   position: relative;
+`
+
+const StyledAttachments = styled(Attachments)`
+  margin-bottom: ${themeSpacing(4)};
 `
 
 const DetailContainer = styled(Column)`
@@ -72,6 +77,9 @@ const IncidentDetail = () => {
   const { emit, listenFor, unlisten } = useEventEmitter()
   const storeDispatch = useDispatch()
   const { id } = useParams()
+  const [isRemovingAttachment, setRemovingAttachment] = useState(false)
+  const [isParent, setIsParent] = useState(false)
+  const [isChild, setIsChild] = useState(false)
   const [state, dispatch] = useReducer(reducer, initialState)
   const {
     error,
@@ -81,12 +89,22 @@ const IncidentDetail = () => {
     patch,
   } = useFetch()
   const { get: getHistory, data: history } = useFetch()
-  const { get: getAttachments, data: attachments } = useFetch()
+  const {
+    get: getAttachments,
+    data: attachments,
+    isLoading: isAttachmentsLoading,
+  } = useFetch()
+  const {
+    del: deleteAttachment,
+    isLoading: isDeleteAttachmentLoading,
+    isSuccess: isDeleteAttachmentSuccess,
+  } = useFetch()
   const { get: getDefaultTexts, data: defaultTexts } = useFetch()
   const { get: getChildren, data: children } = useFetch()
   const { get: getChildrenHistory, data: childrenHistory } = useFetchAll()
   const { get: getContext, data: context } = useFetch()
   const { get: getChildIncidents, data: childIncidents } = useFetchAll()
+  const { upload, uploadSuccess, uploadProgress, uploadError } = useUpload()
 
   const subcategories = useSelector(makeSelectSubCategories)
 
@@ -198,17 +216,18 @@ const IncidentDetail = () => {
   const retrieveUnderlyingData = useCallback(() => {
     getHistory(`${configuration.INCIDENT_PRIVATE_ENDPOINT}${id}/history`)
 
-    // retrieve attachments only once per page load
     if (!state.attachments) {
       getAttachments(
         `${configuration.INCIDENT_PRIVATE_ENDPOINT}${id}/attachments`
       )
     }
 
-    // retrieve children only when an incident has children
-    const hasChildren = incident._links['sia:children']?.length > 0
+    const isParent = incident._links['sia:children']?.length > 0
+    setIsParent(isParent)
+    const isChild = Boolean(incident._links['sia:parent'])
+    setIsChild(isChild)
 
-    if (hasChildren) {
+    if (isParent) {
       getChildren(`${configuration.INCIDENT_PRIVATE_ENDPOINT}${id}/children/`)
     }
 
@@ -278,6 +297,50 @@ const IncidentDetail = () => {
     dispatch({ type: CLOSE_ALL })
   }, [])
 
+  const addAttachment = useCallback(
+    (files) => {
+      if (incident) {
+        upload(files, incident.id)
+      }
+    },
+    [incident, upload]
+  )
+
+  const removeAttachment = useCallback(
+    (attachment) => {
+      deleteAttachment(attachment._links.self.href)
+    },
+    [deleteAttachment]
+  )
+
+  useEffect(() => {
+    if (
+      uploadSuccess ||
+      (!isDeleteAttachmentLoading && isDeleteAttachmentSuccess)
+    ) {
+      getHistory(`${configuration.INCIDENT_PRIVATE_ENDPOINT}${id}/history`)
+      getAttachments(
+        `${configuration.INCIDENT_PRIVATE_ENDPOINT}${id}/attachments`
+      )
+    }
+  }, [
+    getAttachments,
+    getHistory,
+    id,
+    uploadSuccess,
+    isDeleteAttachmentSuccess,
+    isDeleteAttachmentLoading,
+  ])
+
+  useEffect(() => {
+    if (isAttachmentsLoading || isDeleteAttachmentLoading)
+      setRemovingAttachment(true)
+  }, [isAttachmentsLoading, isDeleteAttachmentLoading])
+
+  useEffect(() => {
+    if (!isAttachmentsLoading) setRemovingAttachment(false)
+  }, [isAttachmentsLoading])
+
   if (!state.incident || !subcategories) return null
 
   return (
@@ -301,9 +364,19 @@ const IncidentDetail = () => {
         <DetailContainer
           span={{ small: 1, medium: 2, big: 5, large: 7, xLarge: 7 }}
         >
-          <Detail attachments={state.attachments} context={state.context} />
+          <Detail context={state.context} />
 
-          <AddNote maxContentLength={3000} />
+          <StyledAttachments
+            attachments={state.attachments || []}
+            add={addAttachment}
+            remove={removeAttachment}
+            isChildIncident={isChild}
+            isParentIncident={isParent}
+            isRemoving={isRemovingAttachment}
+            uploadProgress={uploadProgress}
+            uploadSuccess={uploadSuccess}
+            uploadError={uploadError}
+          />
 
           {state.children?.results && state.childrenHistory && (
             <ChildIncidents
