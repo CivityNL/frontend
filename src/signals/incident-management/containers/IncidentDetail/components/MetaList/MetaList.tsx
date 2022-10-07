@@ -9,19 +9,15 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { useSelector } from 'react-redux'
-import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+
 import {
   Button,
   themeColor,
   themeSpacing,
   Link as AscLink,
 } from '@amsterdam/asc-ui'
-
-import type { StatusCode } from 'signals/incident-management/definitions/types'
-import type { Department } from 'types/api/incident'
-
+import LoadingIndicator from 'components/LoadingIndicator'
+import { useFetch } from 'hooks'
 import {
   makeSelectHandlingTimesBySlug,
   makeSelectSubcategoriesGroupedByCategories,
@@ -30,28 +26,32 @@ import {
   makeSelectDepartments,
   makeSelectDirectingDepartments,
 } from 'models/departments/selectors'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import configuration from 'shared/services/configuration/configuration'
 import { string2date, string2time } from 'shared/services/string-parser'
 import RadioInput from 'signals/incident-management/components/RadioInput'
 import SelectInput from 'signals/incident-management/components/SelectInput'
+import Status from 'signals/incident-management/components/Status'
 import {
   typesList,
   priorityList,
 } from 'signals/incident-management/definitions'
-import { INCIDENT_URL } from 'signals/incident-management/routes'
 import statusList, {
   isStatusEnd,
 } from 'signals/incident-management/definitions/statusList'
-import Status from 'signals/incident-management/components/Status'
-
-import { useFetch } from 'hooks'
-import LoadingIndicator from 'components/LoadingIndicator'
+import type { StatusCode } from 'signals/incident-management/definitions/types'
+import { INCIDENT_URL } from 'signals/incident-management/routes'
+import styled from 'styled-components'
 import type { DefaultTexts as DefaultTextsType } from 'types/api/default-text'
-import type { Result, User } from '../../types'
-import ChangeValue from '../ChangeValue'
-import Highlight from '../Highlight'
+import type { Department } from 'types/api/incident'
+
 import IncidentDetailContext from '../../context'
+import type { Result, User } from '../../types'
 import type { IncidentChild } from '../../types'
+import ChangeValue from '../ChangeValue'
+import DepartmentForm from '../DepartmentForm'
+import Highlight from '../Highlight'
 import StatusForm from '../StatusForm'
 
 const StyledMetaList = styled.dl`
@@ -103,6 +103,7 @@ interface MetaListProps {
 
 const MetaList: FC<MetaListProps> = ({ defaultTexts, childIncidents }) => {
   const [showEditStatus, setShowEditStatus] = useState(false)
+  const [showEditDepartment, setShowEditDepartment] = useState(false)
   const { incident } = useContext(IncidentDetailContext)
   const { data: usersData, get: getUsers, isLoading } = useFetch<Result<User>>()
   const departments = useSelector<unknown, { list: Department[] }>(
@@ -263,18 +264,26 @@ const MetaList: FC<MetaListProps> = ({ defaultTexts, childIncidents }) => {
     return ['Binnen de afhandeltermijn']
   }, [incident])
 
-  const getDepartmentId = useCallback(
+  // const getDepartmentId = useCallback(
+  //   () =>
+  //     routingDepartments
+  //       ? `${routingDepartments[0].id}`
+  //       : departmentOptions && departmentOptions[0].key,
+  //   [departmentOptions, routingDepartments]
+  // )
+
+  const getDepartmentValue = useCallback(
     () =>
       routingDepartments
-        ? `${routingDepartments[0].id}`
-        : departmentOptions && departmentOptions[0].key,
+        ? `${routingDepartments[0].name}`
+        : departmentOptions && departmentOptions[0].value,
     [departmentOptions, routingDepartments]
   )
 
-  const getDepartmentPostData = useCallback(
-    (id) => (id ? [{ id: Number.parseInt(id, 10) }] : []),
-    []
-  )
+  // const getDepartmentPostData = useCallback(
+  //   (id) => (id ? [{ id: Number.parseInt(id, 10) }] : []),
+  //   []
+  // )
 
   const subcatHighlightDisabled = Boolean(
     incident?.status &&
@@ -404,17 +413,35 @@ const MetaList: FC<MetaListProps> = ({ defaultTexts, childIncidents }) => {
 
       {configuration.featureFlags.assignSignalToDepartment &&
         departmentOptions && (
-          <Highlight type="routing_departments">
-            <ChangeValue
-              component={SelectInput}
-              display="Afdeling"
-              options={departmentOptions}
-              path="routing_departments"
-              type="routing_departments"
-              rawDataToKey={getDepartmentId}
-              keyToRawData={getDepartmentPostData}
-            />
-          </Highlight>
+          <>
+            <Highlight type="routing_departments">
+              <dt data-testid="meta-list-department-definition">
+                {!showEditDepartment && (
+                  <EditButton
+                    data-testid="editDepartmentButton"
+                    icon={
+                      <img src="/assets/images/icon-edit.svg" alt="Bewerken" />
+                    }
+                    iconSize={18}
+                    variant="application"
+                    type="button"
+                    onClick={() => setShowEditDepartment(true)}
+                  />
+                )}
+                Afdeling
+              </dt>
+              <dd className="status" data-testid="meta-list-afdeling-value">
+                {getDepartmentValue()}
+              </dd>
+            </Highlight>
+            {showEditDepartment && (
+              <DepartmentForm
+                departments={categoryDepartments}
+                routingDepartments={routingDepartments || []}
+                onClose={() => setShowEditDepartment(false)}
+              />
+            )}
+          </>
         )}
 
       {subcategoryOptions.length > 0 && (
