@@ -42,7 +42,11 @@ describe('Yup resolver takes a bunch of controls and returns it into a schema', 
           validators: ['required'],
         },
       },
+<<<<<<< HEAD
       array: {
+=======
+      validateArray: {
+>>>>>>> b6e10cf33 (Validate array.)
         options: {
           validators: ['required'],
         },
