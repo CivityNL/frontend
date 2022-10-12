@@ -1,15 +1,9 @@
-import type { Action } from 'types'
 import type { FetchError } from 'hooks/useFetch'
-import type Context from 'types/context'
-import type { Incident } from 'types/api/incident'
+import type { Action } from 'types'
 import type { DefaultTexts } from 'types/api/default-text'
-import type {
-  State,
-  IncidentChild,
-  HistoryEntry,
-  Attachment,
-  Result,
-} from './types'
+import type { Incident } from 'types/api/incident'
+import type Context from 'types/context'
+
 import type {
   RESET,
   CLOSE_ALL,
@@ -26,7 +20,15 @@ import type {
   EDIT,
   SET_CHILD_INCIDENTS,
   SET_CONTEXT,
+  EXTERNAL,
 } from './constants'
+import type {
+  State,
+  IncidentChild,
+  HistoryEntry,
+  Attachment,
+  Result,
+} from './types'
 
 export type ResetAction = Action<typeof RESET, void>
 export type CloseAllAction = Action<typeof CLOSE_ALL, void>
@@ -61,6 +63,7 @@ export type PatchStartAction = Action<typeof PATCH_START, string>
 export type PatchSuccessAction = Action<typeof PATCH_SUCCESS, string>
 export type PreviewAction = Action<typeof PREVIEW, Partial<State>>
 export type EditAction = Action<typeof EDIT, Partial<State>>
+export type ExternalAction = Action<typeof EXTERNAL, Partial<State>>
 
 export type IncidentDetailAction =
   | ResetAction
@@ -78,3 +81,4 @@ export type IncidentDetailAction =
   | PatchSuccessAction
   | PreviewAction
   | EditAction
+  | ExternalAction

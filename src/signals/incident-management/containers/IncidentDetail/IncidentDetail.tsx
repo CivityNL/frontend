@@ -1,38 +1,37 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (C) 2018 - 2022 Gemeente Amsterdam
 import { useReducer, useEffect, useCallback, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { themeSpacing, Row, Column } from '@amsterdam/asc-ui'
-import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
 
-import configuration from 'shared/services/configuration/configuration'
-import { makeSelectSubCategories } from 'models/categories/selectors'
-import { useFetch, useEventEmitter, useFetchAll } from 'hooks'
+import { themeSpacing, Row, Column } from '@amsterdam/asc-ui'
+import History from 'components/History'
 import { showGlobalNotification } from 'containers/App/actions'
 import { VARIANT_ERROR, TYPE_LOCAL } from 'containers/Notification/constants'
+import { useFetch, useEventEmitter, useFetchAll } from 'hooks'
+import { makeSelectSubCategories } from 'models/categories/selectors'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import { getErrorMessage } from 'shared/services/api/api'
+import configuration from 'shared/services/configuration/configuration'
 import { patchIncidentSuccess } from 'signals/incident-management/actions'
-import History from 'components/History'
-import type { Incident } from 'types/api/incident'
+import styled from 'styled-components'
 import type { DefaultTexts } from 'types/api/default-text'
+import type { Incident } from 'types/api/incident'
 import type Context from 'types/context'
-import reducer, { initialState } from './reducer'
 
 import Attachments from './components/Attachments'
-import ChildIncidents from './components/ChildIncidents'
-import DetailHeader from './components/DetailHeader'
-import MetaList from './components/MetaList'
-import LocationForm from './components/LocationForm'
 import AttachmentViewer from './components/AttachmentViewer'
-import Detail from './components/Detail'
-import LocationPreview from './components/LocationPreview'
+import ChildIncidents from './components/ChildIncidents'
 import CloseButton from './components/CloseButton'
-import IncidentDetailContext from './context'
-
+import Detail from './components/Detail'
+import DetailHeader from './components/DetailHeader'
+import ExternalForm from './components/ExternalForm'
+import LocationForm from './components/LocationForm'
+import LocationPreview from './components/LocationPreview'
+import MetaList from './components/MetaList'
 import {
   CLOSE_ALL,
   EDIT,
+  EXTERNAL,
   PATCH_START,
   PATCH_SUCCESS,
   PREVIEW,
@@ -47,7 +46,9 @@ import {
   SET_HISTORY,
   SET_INCIDENT,
 } from './constants'
+import IncidentDetailContext from './context'
 import useUpload from './hooks/useUpload'
+import reducer, { initialState } from './reducer'
 import type { Attachment, HistoryEntry, IncidentChild, Result } from './types'
 
 const StyledRow = styled(Row)`
@@ -299,6 +300,10 @@ const IncidentDetail = () => {
     dispatch({ type: EDIT, payload: { edit: section, ...payload } })
   }, [])
 
+  const toggleExternalDispatch = useCallback(() => {
+    dispatch({ type: EXTERNAL, payload: {} })
+  }, [])
+
   const addAttachment = useCallback(
     (files) => {
       if (incident) {
@@ -368,6 +373,7 @@ const IncidentDetail = () => {
         update: updateDispatch,
         preview: previewDispatch,
         edit: editDispatch,
+        toggleExternal: toggleExternalDispatch,
         close: closeDispatch,
       }}
     >
@@ -410,10 +416,14 @@ const IncidentDetail = () => {
           span={{ small: 4, medium: 4, big: 4, large: 5, xLarge: 5 }}
           push={{ small: 0, medium: 0, big: 0, large: 0, xLarge: 0 }}
         >
-          <MetaList
-            defaultTexts={state.defaultTexts}
-            childIncidents={state.children?.results}
-          />
+          {state.external ? (
+            <ExternalForm onClose={toggleExternalDispatch} />
+          ) : (
+            <MetaList
+              defaultTexts={state.defaultTexts}
+              childIncidents={state.children?.results}
+            />
+          )}
         </DetailContainer>
 
         {((!showAttachmentViewer && state.preview) || state.edit) && (

@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (C) 2020 - 2022 Gemeente Amsterdam
 import type { Reducer } from 'react'
+
+import type { IncidentDetailAction as Action } from './actions'
 import {
   CLOSE_ALL,
   EDIT,
+  EXTERNAL,
   PATCH_START,
   PATCH_SUCCESS,
   PREVIEW,
@@ -18,8 +21,6 @@ import {
   SET_HISTORY,
   SET_INCIDENT,
 } from './constants'
-
-import type { IncidentDetailAction as Action } from './actions'
 import type { State } from './types'
 
 export const initialState: State = {
@@ -40,6 +41,7 @@ export const initialState: State = {
 export const closedState = {
   preview: undefined,
   edit: undefined,
+  external: false,
   error: undefined,
   attachmentHref: '',
 }
@@ -86,6 +88,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
       return {
         ...state,
         edit: undefined,
+        external: false,
         ...action.payload,
         preview: action.payload?.preview,
       }
@@ -93,9 +96,18 @@ const reducer: Reducer<State, Action> = (state, action) => {
     case EDIT:
       return {
         ...state,
+        external: false,
         preview: undefined,
         ...action.payload,
         edit: action.payload?.edit,
+      }
+
+    case EXTERNAL:
+      return {
+        ...state,
+        edit: undefined,
+        external: !state.external,
+        preview: undefined,
       }
 
     case RESET:

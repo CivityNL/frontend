@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (C) 2019 - 2021 Gemeente Amsterdam
 import { useCallback, useContext, useMemo } from 'react'
-import styled from 'styled-components'
-import { Link, useLocation } from 'react-router-dom'
-import { themeColor, themeSpacing, Heading, styles } from '@amsterdam/asc-ui'
 
+import { themeColor, themeSpacing, Heading, styles } from '@amsterdam/asc-ui'
 import BackLink from 'components/BackLink'
 import Button from 'components/Button'
+import { Link, useLocation } from 'react-router-dom'
 import configuration from 'shared/services/configuration/configuration'
+import { isStatusEnd } from 'signals/incident-management/definitions/statusList'
 import {
   MAP_URL,
   INCIDENT_URL,
   INCIDENTS_URL,
 } from 'signals/incident-management/routes'
-import { isStatusEnd } from 'signals/incident-management/definitions/statusList'
+import styled from 'styled-components'
 
 import { PATCH_TYPE_THOR } from '../../constants'
 import IncidentDetailContext from '../../context'
@@ -79,7 +79,7 @@ const StyledHeading = styled(Heading)`
 `
 
 const DetailHeader = () => {
-  const { incident, update } = useContext(IncidentDetailContext)
+  const { incident, update, toggleExternal } = useContext(IncidentDetailContext)
   const location = useLocation()
 
   const showSplitButton = useMemo(() => {
@@ -126,6 +126,10 @@ const DetailHeader = () => {
     update(patch)
   }, [update])
 
+  const onExternalClick = useCallback(() => {
+    toggleExternal()
+  }, [toggleExternal])
+
   return (
     <Header className="detail-header">
       <BackLinkContainer>
@@ -162,6 +166,10 @@ const DetailHeader = () => {
             THOR
           </Button>
         )}
+
+        <Button type="button" variant="application" onClick={onExternalClick}>
+          Extern
+        </Button>
 
         <DownloadButton
           label="PDF"

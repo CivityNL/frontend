@@ -1,8 +1,8 @@
 import type { FetchError } from 'hooks/useFetch'
 import type { AnyAction } from 'redux'
 import type { StatusCode } from 'signals/incident-management/definitions/types'
-import type { Incident } from 'types/api/incident'
 import type { DefaultTexts } from 'types/api/default-text'
+import type { Incident } from 'types/api/incident'
 import type ContextType from 'types/context'
 
 export interface Context {
@@ -10,6 +10,7 @@ export interface Context {
   update: (action: AnyAction) => void
   preview?: (section: string, payload?: Partial<State>) => void
   edit?: (section: string, payload?: Partial<State>) => void
+  toggleExternal?: () => void
   close?: () => void
 }
 
@@ -26,6 +27,7 @@ export interface State {
   attachmentHref?: string
   patching?: string
   edit?: string
+  external?: boolean
   preview?: string
 }
 

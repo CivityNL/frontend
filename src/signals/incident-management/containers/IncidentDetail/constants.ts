@@ -36,3 +36,5 @@ export const PATCH_SUCCESS =
 export const PREVIEW =
   'sia/incidentManagement/containers/IncidentDetail/PREVIEW'
 export const EDIT = 'sia/incidentManagement/containers/IncidentDetail/EDIT'
+export const EXTERNAL =
+  'sia/incidentManagement/containers/IncidentDetail/EXTERNAL'
