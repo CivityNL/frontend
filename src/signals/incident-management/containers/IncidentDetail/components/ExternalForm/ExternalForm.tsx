@@ -5,6 +5,9 @@ import { useContext } from 'react'
 import { useCallback, useState, useEffect } from 'react'
 
 import { Label } from '@amsterdam/asc-ui'
+import { useDispatch } from 'react-redux'
+import { disablePageScroll, enablePageScroll } from 'scroll-lock'
+
 import ErrorMessage, { ErrorWrapper } from 'components/ErrorMessage'
 import Input from 'components/Input'
 import LoadingIndicator from 'components/LoadingIndicator'
@@ -12,10 +15,8 @@ import TextArea from 'components/TextArea'
 import { showGlobalNotification } from 'containers/App/actions'
 import { TYPE_LOCAL, VARIANT_ERROR } from 'containers/Notification/constants'
 import { useFetch, useEventEmitter } from 'hooks'
-import { useDispatch } from 'react-redux'
-import { disablePageScroll, enablePageScroll } from 'scroll-lock'
 import configuration from 'shared/services/configuration/configuration'
-import { REACTIE_GEVRAAGD } from 'signals/incident-management/definitions/statusList'
+import { DOORZETTEN_NAAR_EXTERN } from 'signals/incident-management/definitions/statusList'
 
 import { PATCH_TYPE_STATUS } from '../../constants'
 import IncidentDetailContext from '../../context'
@@ -84,16 +85,17 @@ const ExternalForm: FunctionComponent<DepartmentFormProps> = ({ onClose }) => {
       type: PATCH_TYPE_STATUS,
       patch: {
         status: {
-          state: REACTIE_GEVRAAGD.key,
+          state: DOORZETTEN_NAAR_EXTERN.key,
           text: textValue,
-          send_email: true,
+          send_mail: true,
+          email_override: email,
         },
       },
     })
 
     closeEmailPreview()
     onClose()
-  }, [closeEmailPreview, message, onClose, update])
+  }, [closeEmailPreview, email, message, onClose, update])
 
   const handleSubmit = useCallback(
     (event) => {
@@ -118,7 +120,7 @@ const ExternalForm: FunctionComponent<DepartmentFormProps> = ({ onClose }) => {
         getEmailTemplate(
           `${configuration.INCIDENTS_ENDPOINT}${incident?.id}/email/preview`,
           {
-            status: REACTIE_GEVRAAGD.key,
+            status: DOORZETTEN_NAAR_EXTERN.key,
             text: message,
           }
         )

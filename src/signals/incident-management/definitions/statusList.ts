@@ -117,6 +117,13 @@ export const VERZOEK_TOT_AFHANDELING = {
   shows_remaining_sla_days: true,
 }
 
+export const DOORZETTEN_NAAR_EXTERN = {
+  key: StatusCode.DoorzettenNaarExtern,
+  value: 'Doorzetten naar extern',
+  email_sent_when_set: true,
+  shows_remaining_sla_days: true,
+}
+
 export const AFGEHANDELD_EXTERN = {
   key: StatusCode.AfgehandeldExtern,
   value: 'Extern: afgehandeld',
