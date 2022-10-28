@@ -1,16 +1,19 @@
 /* SPDX-License-Identifier: MPL-2.0 */
 /* Copyright (C) 2022 Gemeente Amsterdam */
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
+import type { FeatureCollection, Point } from 'geojson'
 import L from 'leaflet'
 
 import MarkerCluster from 'components/MarkerCluster'
-import { dynamicIcon } from 'shared/services/configuration/map-markers'
-import { featureToCoordinates } from 'shared/services/map-location'
+import {
+  dynamicIcon,
+  selectedMarkerIcon,
+} from 'shared/services/configuration/map-markers'
 import type { Bbox } from 'signals/incident/components/form/MapSelectors/hooks/useBoundingBox'
 import useBoundingBox from 'signals/incident/components/form/MapSelectors/hooks/useBoundingBox'
 
-import type { Point, Incident } from '../../types'
+import type { Incident, Properties } from '../../types'
 
 const clusterLayerOptions = {
   zoomToBoundsOnClick: true,
@@ -18,22 +21,23 @@ const clusterLayerOptions = {
 }
 
 interface Props {
+  handleIncidentSelect: (incident: Incident) => void
   incidents?: Incident[]
   passBbox(bbox: Bbox): void
-  resetMarkerIcons: () => void
-  handleIncidentSelect: (incident?: Incident) => void
-  handleCloseDetailPanel: () => void
+  resetSelectedMarker: () => void
+  selectedMarkerRef: React.MutableRefObject<L.Marker<Properties> | undefined>
 }
 
 /* istanbul ignore next */
 export const IncidentLayer = ({
+  handleIncidentSelect,
   incidents,
   passBbox,
-  resetMarkerIcons,
-  handleIncidentSelect,
-  handleCloseDetailPanel,
+  resetSelectedMarker,
+  selectedMarkerRef,
 }: Props) => {
   const [layerInstance, setLayerInstance] = useState<L.GeoJSON<Point>>()
+  const activeLayer = useRef<L.GeoJSON>()
   const bbox = useBoundingBox()
 
   useEffect(() => {
@@ -44,44 +48,82 @@ export const IncidentLayer = ({
 
   useEffect(() => {
     if (!incidents || !layerInstance) return
+    activeLayer.current?.remove()
 
-    incidents.forEach((incident) => {
-      const latlng = featureToCoordinates(incident.geometry)
-      const { category, icon: categoryIcon } = incident.properties
+    const fc: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: incidents,
+    }
 
-      const marker = L.marker(latlng, {
-        icon: dynamicIcon(categoryIcon),
-        alt: category.name,
-        keyboard: false,
-      })
+    layerInstance.clearLayers()
 
-      /* istanbul ignore next */
-      marker.on('click', () => {
-        // TODO: Change icon on select. Also return icon on deselect or close detailPanel.
+    const layer = L.geoJSON(fc, {
+      onEachFeature: (feature: Incident, layer: L.Layer) => {
+        layer.on('click', (e: { target: L.Marker<Properties> }) => {
+          if (selectedMarkerRef.current !== e.target) {
+            resetSelectedMarker()
+          }
 
-        if (incident) {
-          handleIncidentSelect(incident)
+          e.target.setIcon(selectedMarkerIcon)
+          selectedMarkerRef.current = e.target
+
+          handleIncidentSelect(feature)
+        })
+      },
+      pointToLayer: (incident: Incident, latlng) => {
+        let marker = L.marker(latlng, {
+          icon: dynamicIcon(incident.properties?.icon),
+          alt: incident.properties.category.name,
+          keyboard: false,
+        })
+        // Matching on created_at since incidents do not have an ID
+        if (
+          selectedMarkerRef.current?.feature?.properties.created_at ===
+          incident.properties.created_at
+        ) {
+          marker = L.marker(latlng, {
+            icon: selectedMarkerIcon,
+            alt: incident.properties.category.name,
+            keyboard: false,
+          })
+          selectedMarkerRef.current = marker
         }
-      })
-      layerInstance.addLayer(marker)
+
+        return marker
+      },
     })
 
-    return () => {
-      handleCloseDetailPanel()
-      layerInstance.clearLayers()
-    }
+    layer.addTo(layerInstance)
+
+    activeLayer.current = layer
   }, [
-    layerInstance,
-    incidents,
-    resetMarkerIcons,
     handleIncidentSelect,
-    handleCloseDetailPanel,
+    incidents,
+    layerInstance,
+    resetSelectedMarker,
+    selectedMarkerRef,
   ])
+
+  const getIsSelectedCluster = useCallback(
+    (cluster: L.MarkerCluster) => {
+      const markers = cluster.getAllChildMarkers()
+
+      // Matching on created_at since incidents do not have ID's
+      return markers.some(
+        (marker) =>
+          marker.feature?.properties.created_at ===
+          selectedMarkerRef.current?.feature?.properties.created_at
+      )
+    },
+    [selectedMarkerRef]
+  )
 
   return (
     <MarkerCluster
       clusterOptions={clusterLayerOptions}
       setInstance={setLayerInstance}
+      getIsSelectedCluster={getIsSelectedCluster}
+      spiderfySelectedCluster={false}
     />
   )
 }
