@@ -484,6 +484,7 @@ const StatusForm: FunctionComponent<StatusFormProps> = ({
             {isLoading && <LoadingIndicator />}
             {emailTemplate?.html && (
               <EmailPreview
+                title="Controleer bericht aan melder"
                 emailBody={emailTemplate.html}
                 onClose={closeEmailPreview}
                 onUpdate={onUpdate}

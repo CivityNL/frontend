@@ -17,6 +17,7 @@ import { fetchCategories as fetchCategoriesAction } from 'models/categories/acti
 import { fetchDepartments as fetchDepartmentsAction } from 'models/departments/actions'
 import { getIsAuthenticated } from 'shared/services/auth/auth'
 import configuration from 'shared/services/configuration/configuration'
+import ExternalReplyQuestionnaireContainer from 'signals/incident/containers/ExternalReplyQuestionnaireContainer'
 import IncidentContainer from 'signals/incident/containers/IncidentContainer'
 import { resetIncident } from 'signals/incident/containers/IncidentContainer/actions'
 import IncidentOverviewContainer from 'signals/incident/containers/IncidentOverviewContainer'
@@ -117,6 +118,12 @@ export const AppContainer = () => {
                   <Route
                     path="/meldingenkaart"
                     component={IncidentMapContainer}
+                  />
+                )}
+                {configuration.featureFlags.enableForwardIncidentToExternal && (
+                  <Route
+                    path="/incident/extern/:uuid"
+                    component={ExternalReplyQuestionnaireContainer}
                   />
                 )}
                 <Route

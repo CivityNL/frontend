@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (C) 2019 - 2022 Gemeente Amsterdam
-import type { FunctionComponent } from 'react'
+import { FunctionComponent, useRef } from 'react'
 import { useContext } from 'react'
 import { useCallback, useState, useEffect } from 'react'
 
@@ -42,6 +42,7 @@ const ExternalForm: FunctionComponent<DepartmentFormProps> = ({ onClose }) => {
   const { incident, update } = useContext(IncidentDetailContext)
   const storeDispatch = useDispatch()
   const { listenFor, unlisten } = useEventEmitter()
+  const formRef = useRef<HTMLFormElement>(null)
 
   const [modalEmailPreviewIsOpen, setModalEmailPreviewIsOpen] = useState(false)
   const [email, setEmail] = useState('')
@@ -87,7 +88,7 @@ const ExternalForm: FunctionComponent<DepartmentFormProps> = ({ onClose }) => {
         status: {
           state: DOORZETTEN_NAAR_EXTERN.key,
           text: textValue,
-          send_mail: true,
+          send_email: true,
           email_override: email,
         },
       },
@@ -122,6 +123,7 @@ const ExternalForm: FunctionComponent<DepartmentFormProps> = ({ onClose }) => {
           {
             status: DOORZETTEN_NAAR_EXTERN.key,
             text: message,
+            email_override: email,
           }
         )
       }
@@ -148,6 +150,12 @@ const ExternalForm: FunctionComponent<DepartmentFormProps> = ({ onClose }) => {
   )
 
   useEffect(() => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+  }, [formRef])
+
+  useEffect(() => {
     listenFor('keydown', escFunction)
     return () => {
       unlisten('keydown', escFunction)
@@ -159,7 +167,6 @@ const ExternalForm: FunctionComponent<DepartmentFormProps> = ({ onClose }) => {
 
     if (emailTemplate?.html) {
       openEmailPreviewModal()
-      // dispatch({ type: 'SET_EMAIL_TEMPLATE', payload: emailTemplate })
     }
   }, [emailTemplate, openEmailPreviewModal])
 
@@ -177,11 +184,12 @@ const ExternalForm: FunctionComponent<DepartmentFormProps> = ({ onClose }) => {
   }, [emailTemplateError, storeDispatch])
 
   return (
-    <Form onSubmit={handleSubmit} data-testid="statusForm" noValidate>
+    <Form ref={formRef} onSubmit={handleSubmit} data-testid="forwardToExternalForm" noValidate>
       <StyledH4 forwardedAs="h2">Doorzetten naar externe partij</StyledH4>
       <StyledSection>
         <ErrorWrapper invalid={Boolean(errorMessages.email)}>
           <Label
+            htmlFor="externalEmail"
             label={
               <>
                 <strong>E-mail behandelaar</strong>
@@ -189,20 +197,18 @@ const ExternalForm: FunctionComponent<DepartmentFormProps> = ({ onClose }) => {
             }
           />
           <ErrorMessage message={errorMessages.email} />
-          <Input required={true} onChange={onEmailChange} value={email} />
+          <Input id="externalEmail" required={true} onChange={onEmailChange} value={email} placeholder="E-mailadres" />
         </ErrorWrapper>
       </StyledSection>
       <StyledSection>
         <ErrorWrapper invalid={Boolean(errorMessages.message)}>
           <Label
-            label={
-              <>
-                <strong>Toelichting behandelaar</strong>
-              </>
-            }
+            htmlFor="externalEmailMessage"
+            label={<strong>Toelichting behandelaar</strong>}
           />
           <ErrorMessage message={errorMessages.message} />
           <TextArea
+            id="externalEmailMessage"
             maxContentLength={MAX_MESSAGE_LENGTH}
             rows={12}
             value={message}
@@ -236,6 +242,7 @@ const ExternalForm: FunctionComponent<DepartmentFormProps> = ({ onClose }) => {
             {isLoading && <LoadingIndicator />}
             {emailTemplate?.html && (
               <EmailPreview
+                title="Controleer bericht aan behandelaar"
                 emailBody={emailTemplate.html}
                 onClose={closeEmailPreview}
                 onUpdate={onUpdate}

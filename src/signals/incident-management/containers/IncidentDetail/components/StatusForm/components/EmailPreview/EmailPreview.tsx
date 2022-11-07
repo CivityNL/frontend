@@ -33,6 +33,7 @@ interface EmailPreviewProps {
   emailBody: string
   onClose: () => void
   onUpdate: () => void
+  title: string
 }
 
 const styling = `
@@ -53,12 +54,13 @@ const EmailPreview: FC<EmailPreviewProps> = ({
   emailBody,
   onUpdate,
   onClose,
+  title,
 }) => {
   const styledHtml = emailBody.replace('</head>', `${fontSrc}${styling}</head>`)
 
   return (
     <ModalContainer>
-      <ModalHeader title="Controleer bericht aan melder" onClose={onClose} />
+      <ModalHeader title={title} onClose={onClose} />
       <StyledIframe data-testid="emailBodyIframe" srcDoc={styledHtml} />
       <StyledFormFooter
         cancelBtnLabel="Wijzig"

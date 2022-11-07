@@ -7,10 +7,10 @@
     "assignSignalToEmployee": false,
     "enableAmsterdamSpecificOverigCategories": false,
     "enableCsvExport": false,
-    "enableNearIncidents": false,
-    "enablePublicIncidentsMap": false,
-    "enablePublicSignalMap": false,
-    "enableReporter": false,
+    "enableNearIncidents": true,
+    "enablePublicIncidentsMap": true,
+    "enablePublicSignalMap": true,
+    "enableReporter": true,
     "enableMultipleKtoQuestions": false,
     "fetchDistrictsFromBackend": false,
     "fetchQuestionsFromBackend": false,
@@ -18,7 +18,8 @@
     "reporterMailHandledNegativeContactEnabled": true,
     "showThorButton": false,
     "showVulaanControls": false,
-    "useProjectenSignalType": false
+    "useProjectenSignalType": false,
+    "enableForwardIncidentToExternal": false
   },
   "head": {
     "androidIcon": "/icon_192x192.png",

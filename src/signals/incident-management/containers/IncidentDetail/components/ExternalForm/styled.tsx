@@ -7,9 +7,12 @@ import styled from 'styled-components'
 export const Form = styled.form`
   position: relative;
   padding: ${themeSpacing(5, 5, 6, 5)};
-  margin-bottom: ${themeSpacing(6)};
+  margin: ${themeSpacing(6)} 0;
   background-color: ${themeColor('tint', 'level2')};
-  width: 100%;
+
+  @media (min-width: ${({ theme }) => theme.layouts.big.max}px) {
+    margin-left: ${themeSpacing(23)};
+  }
 `
 
 export const StyledButton = styled(Button)`

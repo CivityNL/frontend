@@ -8,11 +8,16 @@ import type { Questionnaire as QuestionnaireType } from 'types/api/qa/questionna
 import Questionnaire from '..'
 
 const questionnaire: QuestionnaireType = {
+  explanation: {
+    sections: [],
+    title: ''
+  },
   uuid: '50f87d6e-2479-4358-bf59-f01c27191848',
   name: 'Reactie gevraagd',
   description: null,
   is_active: true,
   first_question: {
+    analysis_key: 'reaction',
     key: null,
     uuid: 'bbb5518e-0044-4bc7-89dd-b16a0dfbbf07',
     label: 'Wat voor kleur heeft de auto?',

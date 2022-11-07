@@ -148,6 +148,7 @@ const statusList: Status[] = [
   VERZENDEN_MISLUKT,
   VERZOEK_TOT_AFHANDELING,
   AFGEHANDELD_EXTERN,
+  DOORZETTEN_NAAR_EXTERN,
 ]
 
 export default statusList

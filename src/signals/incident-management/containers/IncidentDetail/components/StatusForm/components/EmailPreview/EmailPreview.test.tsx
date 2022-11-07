@@ -16,6 +16,7 @@ describe('StatusForm EmailPreview component', () => {
     render(
       withAppContext(
         <EmailPreview
+          title="Controleer bericht aan melder"
           onUpdate={onUpdate}
           emailBody={emailBody}
           onClose={onClose}
@@ -38,6 +39,7 @@ describe('StatusForm EmailPreview component', () => {
     render(
       withAppContext(
         <EmailPreview
+          title="Foo"
           onUpdate={onUpdate}
           emailBody={emailBody}
           onClose={onClose}
