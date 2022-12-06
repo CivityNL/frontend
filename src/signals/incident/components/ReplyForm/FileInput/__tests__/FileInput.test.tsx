@@ -10,7 +10,6 @@ const WrappedFileInput: FunctionComponent = () => {
   const {
     control,
     trigger,
-    register,
     formState: { errors },
   } = useForm()
 
@@ -18,9 +17,9 @@ const WrappedFileInput: FunctionComponent = () => {
     <FileInput
       id="file-input"
       label="Foo"
+      shortLabel="Bar"
       control={control}
       trigger={trigger}
-      register={register}
       errorMessage={errors['file-input']?.message}
     />
   )

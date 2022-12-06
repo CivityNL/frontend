@@ -2,9 +2,12 @@
 // Copyright (C) 2021 Gemeente Amsterdam
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
 import { withAppContext } from 'test/utils'
+import type { Question } from 'types/api/qa/question'
 import { FieldType } from 'types/api/qa/question'
 import type { Questionnaire as QuestionnaireType } from 'types/api/qa/questionnaire'
+
 import Questionnaire from '..'
 
 const questionnaire: QuestionnaireType = {
@@ -29,7 +32,10 @@ describe('<Questionnaire />', () => {
   it('should render the questionnaire component', () => {
     render(
       withAppContext(
-        <Questionnaire questionnaire={questionnaire} onSubmit={submitSpy} />
+        <Questionnaire
+          questions={[questionnaire.first_question]}
+          onSubmit={submitSpy}
+        />
       )
     )
 
@@ -51,7 +57,13 @@ describe('<Questionnaire />', () => {
 
     render(
       withAppContext(
-        <Questionnaire questionnaire={questionnaire} onSubmit={submitSpy} />
+        <Questionnaire
+          questions={[
+            questionnaire.first_question,
+            expected[0] as unknown as Question,
+          ]}
+          onSubmit={submitSpy}
+        />
       )
     )
 

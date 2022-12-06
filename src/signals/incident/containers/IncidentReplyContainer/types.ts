@@ -3,15 +3,13 @@
 import type { Control } from 'react-hook-form'
 import type { FieldType } from 'types/api/qa/question'
 
-export type FormData = {
-  [key: string]: unknown
-}
-
+// TODO can this type be moved to ReplyForm?
 export interface FieldProps {
   label: string
+  shortLabel: string
   errorMessage?: string
   id: string
-  control: Control<FormData>
+  control: Control<Record<string, unknown>>
   register: any
   trigger: (id: string) => void
   rules?: { maxLength: unknown }

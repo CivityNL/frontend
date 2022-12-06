@@ -8,25 +8,36 @@ import MAP_OPTIONS from 'shared/services/configuration/map-options'
 import { featureToCoordinates } from 'shared/services/map-location'
 import { locationType } from 'shared/types'
 
-const MapDetail = ({ value, className, zoom, icon, hasZoomControls }) => {
+const MapDetail = ({
+  value,
+  className,
+  zoom,
+  icon,
+  canFocusMarker,
+  hasZoomControls,
+}) => {
   const { lat, lng } = value?.geometrie
     ? featureToCoordinates(value.geometrie)
     : {}
 
-  const options = {
+  const mapOptions = {
     ...MAP_OPTIONS,
     zoom,
     attributionControl: false,
     center: [lat, lng],
   }
+
   return lat && lng ? (
     <Map
       data-testid="mapDetail"
-      mapOptions={options}
+      mapOptions={mapOptions}
       className={className}
       hasZoomControls={hasZoomControls}
     >
-      <Marker args={[{ lat, lng }]} options={{ icon }} />
+      <Marker
+        args={[{ lat, lng }]}
+        options={{ icon, keyboard: canFocusMarker }}
+      />
     </Map>
   ) : null
 }
@@ -34,6 +45,7 @@ const MapDetail = ({ value, className, zoom, icon, hasZoomControls }) => {
 MapDetail.defaultProps = {
   className: '',
   hasZoomControls: false,
+  canFocusMarker: true,
   icon: markerIcon,
 }
 
@@ -41,6 +53,7 @@ MapDetail.propTypes = {
   className: PropTypes.string,
   hasZoomControls: PropTypes.bool,
   icon: PropTypes.shape({}), // leaflet icon object
+  canFocusMarker: PropTypes.bool,
   value: locationType.isRequired,
   zoom: PropTypes.number.isRequired,
 }

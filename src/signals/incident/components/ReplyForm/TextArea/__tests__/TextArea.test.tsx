@@ -21,6 +21,7 @@ const WrappedTextArea: FunctionComponent = () => {
       <TextArea
         id={id}
         label="Foo"
+        shortLabel="Bar"
         control={control}
         trigger={trigger}
         register={register}
