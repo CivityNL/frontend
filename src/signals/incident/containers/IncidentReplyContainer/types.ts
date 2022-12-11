@@ -3,7 +3,6 @@
 import type { Control } from 'react-hook-form'
 import type { FieldType } from 'types/api/qa/question'
 
-// TODO can this type be moved to ReplyForm?
 export interface FieldProps {
   label: string
   shortLabel: string
@@ -18,5 +17,5 @@ export interface FieldProps {
 export type FormAnswer = {
   uuid: string
   fieldType?: FieldType
-  value: unknown
+  value: FileList | string
 }

@@ -5,5 +5,5 @@ import type { FieldType } from 'types/api/qa/question'
 export type FormAnswer = {
   uuid: string
   fieldType?: FieldType
-  value: unknown
+  value: string | FileList
 }

@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Copyright (C) 2021 Gemeente Amsterdam
-import type { FunctionComponent } from 'react'
-
+// Copyright (C) 2021 - 2022 Gemeente Amsterdam, Vereniging van Nederlandse Gemeenten
 import { themeSpacing } from '@amsterdam/asc-ui'
 import { useForm } from 'react-hook-form'
 import type { FieldError } from 'react-hook-form'
@@ -31,10 +29,7 @@ interface QuestionnaireProps {
   questions: Question[]
 }
 
-const Questionnaire: FunctionComponent<QuestionnaireProps> = ({
-  questions,
-  onSubmit,
-}) => {
+const Questionnaire = ({ questions, onSubmit }: QuestionnaireProps) => {
   const {
     register,
     handleSubmit,
@@ -43,7 +38,7 @@ const Questionnaire: FunctionComponent<QuestionnaireProps> = ({
     trigger,
   } = useForm()
 
-  const submitForm = (data: Record<string, unknown>) => {
+  const submitForm = (data: Record<string, FormAnswer['value']>) => {
     onSubmit(
       Object.keys(data).map((key) => ({
         uuid: key,

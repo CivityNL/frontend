@@ -132,7 +132,7 @@ export const AppContainer = () => {
                 />
                 {configuration.featureFlags.enableForwardIncidentToExternal && (
                   <Route
-                    path="/incident/extern/:uuid"
+                    path="/incident/extern/:id"
                     component={ExternalReplyContainer}
                   />
                 )}

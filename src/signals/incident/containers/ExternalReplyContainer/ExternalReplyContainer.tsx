@@ -21,37 +21,20 @@ import { FieldType } from 'types/api/qa/question'
 
 import Notice from '../../components/ReplyForm/Notice'
 import QuestionnaireComponent from '../../components/ReplyForm/Questionnaire'
-import Address from './components/Address'
 import ExplanationSection from './components/ExplanationSection'
+import Location from './components/Location'
 import * as constants from './constants'
-import {
-  StyledHeading,
-  Wrapper,
-  MapThumbnail,
-  MapThumbnailButton,
-  MapThumbnailSection,
-  Map,
-  MapRow,
-  QuestionnaireRow,
-} from './styled'
+import { StyledHeading, Wrapper, Map, MapRow, QuestionnaireRow } from './styled'
 import type { FormAnswer } from './types'
 
 const ExternalReplyContainer = () => {
-  const { uuid: sessionUuid } = useParams<{ uuid: string }>()
+  const { id: sessionId } = useParams<{ id: string }>()
   const dispatch = useDispatch()
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
   const [submitFormError, setSubmitFormError] = useState(false)
   const [showMap, setShowMap] = useState(false)
   const [selectedAttachmentViewerImage, setSelectedAttachmentViewerImage] =
     useState('')
-
-  const handleMapThumbnailKey: React.KeyboardEventHandler<HTMLElement> = (
-    event
-  ) => {
-    if (event.key === 'Enter') {
-      setShowMap(true)
-    }
-  }
 
   const { post: postAnswers, error: postAnswerError } = usePostAnswers()
 
@@ -104,7 +87,7 @@ const ExternalReplyContainer = () => {
     async (answers: FormAnswer[]) => {
       try {
         setSubmitFormError(false)
-        if (!session || !session.uuid) throw 'No session uuid'
+        if (!session || !sessionId) throw 'No session uuid'
 
         setIsSubmittingForm(true)
 
@@ -125,7 +108,7 @@ const ExternalReplyContainer = () => {
           formData.append('question_uuid', attachmentsQuestion.uuid)
 
           const response = await fetch(
-            `${configuration.QA_SESSIONS_ENDPOINT}${session.uuid}/attachments`,
+            `${configuration.QA_SESSIONS_ENDPOINT}${sessionId}/attachments`,
             {
               body: formData,
               method: 'POST',
@@ -141,11 +124,12 @@ const ExternalReplyContainer = () => {
                 type: TYPE_LOCAL,
               })
             )
+            throw new Error('Failed to upload files')
           }
         }
 
         await postAnswers(
-          sessionUuid,
+          sessionId,
           answers.map((answer) => ({
             payload: answer.value as string,
             question_uuid: answer.uuid,
@@ -153,7 +137,7 @@ const ExternalReplyContainer = () => {
         )
 
         await submitQuestionnaire(
-          `${configuration.QA_SESSIONS_ENDPOINT}${session.uuid}/submit`
+          `${configuration.QA_SESSIONS_ENDPOINT}${sessionId}/submit`
         )
       } catch (error) {
         setSubmitFormError(true)
@@ -161,12 +145,12 @@ const ExternalReplyContainer = () => {
         setIsSubmittingForm(false)
       }
     },
-    [dispatch, postAnswers, session, sessionUuid, submitQuestionnaire]
+    [dispatch, postAnswers, session, sessionId, submitQuestionnaire]
   )
 
   useEffect(() => {
-    getSession(sessionUuid)
-  }, [getSession, sessionUuid])
+    getSession(sessionId)
+  }, [getSession, sessionId])
 
   useEffect(() => {
     if (submitError || submitFormError || postAnswerError) {
@@ -252,23 +236,10 @@ const ExternalReplyContainer = () => {
             />
 
             {session.location && (
-              <MapThumbnailSection>
-                <MapThumbnailButton
-                  onKeyDown={handleMapThumbnailKey}
-                  onClick={() => setShowMap(true)}
-                >
-                  <MapThumbnail
-                    value={{ geometrie: session.location.geometrie }}
-                  />
-                </MapThumbnailButton>
-                <Address
-                  address={
-                    session.location.address_text
-                      ? session.location.address
-                      : null
-                  }
-                />
-              </MapThumbnailSection>
+              <Location
+                location={session.location}
+                onClick={() => setShowMap(true)}
+              />
             )}
 
             {session.questionnaire_explanation.sections

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (C) 2018 - 2022 Gemeente Amsterdam, Vereniging van Nederlandse Gemeenten
-import { useReducer, useEffect, useCallback, useState, useContext } from 'react'
+import { useReducer, useEffect, useCallback, useState } from 'react'
 
 import { themeSpacing, Row, Column } from '@amsterdam/asc-ui'
 import CloseButton from 'components/CloseButton'

@@ -6,25 +6,30 @@ import userEvent from '@testing-library/user-event'
 import { withAppContext } from 'test/utils'
 import type { Question } from 'types/api/qa/question'
 import { FieldType } from 'types/api/qa/question'
-import type { Questionnaire as QuestionnaireType } from 'types/api/qa/questionnaire'
 
 import Questionnaire from '..'
+import { ALLOWED_FILE_TYPES, MIN } from '../../FileInput/FileInput'
 
-const questionnaire: QuestionnaireType = {
-  uuid: '50f87d6e-2479-4358-bf59-f01c27191848',
-  name: 'Reactie gevraagd',
-  description: null,
-  is_active: true,
-  first_question: {
+const questions: Question[] = [
+  {
     key: null,
-    uuid: 'bbb5518e-0044-4bc7-89dd-b16a0dfbbf07',
+    uuid: 'foo',
     label: 'Wat voor kleur heeft de auto?',
     short_label: 'Reactie melder',
     field_type: FieldType.PlainText,
     next_rules: null,
     required: true,
   },
-}
+  {
+    key: null,
+    uuid: 'bar',
+    label: "Voeg aub wat foto's toe",
+    short_label: "Foto's toevoegen",
+    field_type: FieldType.FileInput,
+    next_rules: null,
+    required: true,
+  },
+]
 
 const submitSpy = jest.fn()
 
@@ -32,10 +37,7 @@ describe('<Questionnaire />', () => {
   it('should render the questionnaire component', () => {
     render(
       withAppContext(
-        <Questionnaire
-          questions={[questionnaire.first_question]}
-          onSubmit={submitSpy}
-        />
+        <Questionnaire questions={questions} onSubmit={submitSpy} />
       )
     )
 
@@ -44,33 +46,35 @@ describe('<Questionnaire />', () => {
     screen.getByRole('button', { name: 'Verstuur' })
   })
 
-  it('should submit the correct values', async () => {
-    const value = 'rood'
+  it('should submit plaintext and file input values', async () => {
+    const plainTextValue = 'rood'
+    const fileValue = new File(['X'.repeat(MIN + 1)], 'hello.png', {
+      type: ALLOWED_FILE_TYPES[0],
+    })
     const expected = [
       {
-        fieldType: questionnaire.first_question.field_type,
-        uuid: questionnaire.first_question.uuid,
-        value,
+        fieldType: questions[0].field_type,
+        uuid: questions[0].uuid,
+        value: plainTextValue,
       },
-      { fieldType: 'file_input', uuid: 'file-input', value: [] },
+      {
+        fieldType: questions[1].field_type,
+        uuid: questions[1].uuid,
+        value: [fileValue],
+      },
     ]
 
     render(
       withAppContext(
-        <Questionnaire
-          questions={[
-            questionnaire.first_question,
-            expected[0] as unknown as Question,
-          ]}
-          onSubmit={submitSpy}
-        />
+        <Questionnaire questions={questions} onSubmit={submitSpy} />
       )
     )
 
     userEvent.type(
       screen.getByRole('textbox', { name: 'Wat voor kleur heeft de auto?' }),
-      value
+      plainTextValue
     )
+    userEvent.upload(screen.getByLabelText(/Foto's toevoegen/), fileValue)
     userEvent.click(screen.getByRole('button', { name: 'Verstuur' }))
 
     await waitFor(() => {

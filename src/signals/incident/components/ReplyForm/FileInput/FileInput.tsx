@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (C) 2021 - 2022 Vereniging van Nederlandse Gemeenten, Gemeente Amsterdam
-import type { FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
 
 import type { Control } from 'react-hook-form'
@@ -9,10 +8,15 @@ import { useController } from 'react-hook-form'
 import FileInputComponent from 'components/FileInput'
 import fileSize from 'signals/incident/services/file-size'
 
-const MIN = 30 * 2 ** 10 // 30 KiB
+export const MIN = 30 * 2 ** 10 // 30 KiB
 const MAX = 20 * 2 ** 20 // 20 MiB
 const MAX_NUMBER_OF_FILES = 3
-const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
+export const ALLOWED_FILE_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/gif',
+]
 const ALLOWED_EXTENSIONS = ALLOWED_FILE_TYPES.map((type) => type.split('/')[1])
 
 type FileInputProps = {
@@ -24,14 +28,14 @@ type FileInputProps = {
   control: Control<Record<string, unknown>>
 }
 
-const FileInput: FunctionComponent<FileInputProps> = ({
+const FileInput = ({
   errorMessage,
   shortLabel,
   id,
   label,
   trigger,
   control,
-}) => {
+}: FileInputProps) => {
   const [files, setFiles] = useState<File[]>([])
   const controller = useController({
     control,
