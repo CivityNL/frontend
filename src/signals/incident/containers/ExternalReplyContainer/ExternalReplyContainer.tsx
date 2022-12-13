@@ -21,44 +21,50 @@ import {
   QuestionnaireRow,
   StyledExplanationSection,
 } from './styled'
-import useQuestionnaire from './useQuestionnaire'
+import useExternalReplyQuestionnaire from './useExternalReplyQuestionnaire'
+
+type Params = {
+  /** Questionnaire session id  */
+  id: string
+}
 
 const ExternalReplyContainer = () => {
-  const { id } = useParams<{ id: string }>()
+  const { id } = useParams<Params>()
   const [showMap, setShowMap] = useState(false)
   const [selectedAttachmentViewerImage, setSelectedAttachmentViewerImage] =
     useState('')
 
   const {
     explanation,
-    isLoading,
+    isFetchingQuestionnaire,
+    isSubmittingForm,
     location,
     questions,
-    sessionErrorMessage,
-    sessionSubmittedMessage,
+    questionnaireErrorMessage,
+    submitQuestionnaireSuccessMessage,
     submit,
     attachments,
-  } = useQuestionnaire(id)
+  } = useExternalReplyQuestionnaire(id)
 
-  if (sessionErrorMessage) {
+  if (questionnaireErrorMessage) {
     return (
       <Notice
-        title={sessionErrorMessage.title}
-        content={sessionErrorMessage.content}
+        title={questionnaireErrorMessage.title}
+        content={questionnaireErrorMessage.content}
       />
     )
   }
 
-  if (sessionSubmittedMessage) {
+  if (submitQuestionnaireSuccessMessage) {
     return (
       <Notice
-        title={sessionSubmittedMessage.title}
-        content={sessionSubmittedMessage.content}
+        title={submitQuestionnaireSuccessMessage.title}
+        content={submitQuestionnaireSuccessMessage.content}
       />
     )
   }
 
-  if (isLoading) return <LoadingIndicator />
+  if (isFetchingQuestionnaire || isSubmittingForm) return <LoadingIndicator />
   if (!explanation || !questions) return null
 
   return (

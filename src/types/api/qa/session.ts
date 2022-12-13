@@ -14,6 +14,9 @@ export interface Session {
     'sia:post-attachments': {
       href: string
     }
+    'sia:post-answers': {
+      href: string
+    }
     'sia:post-submit': {
       href: string
     }

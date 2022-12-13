@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (C) 2022 Vereniging van Nederlandse Gemeenten
 import { Heading, themeSpacing } from '@amsterdam/asc-ui'
 import styled from 'styled-components'
 
@@ -58,13 +60,12 @@ const ExplanationSection = ({
     <Section className={className}>
       <StyledHeading forwardedAs="h4">{title}</StyledHeading>
 
-      {text
-        ? text.split('\n').map((line) => (
-            <Paragraph key={line} gutterBottom={0}>
-              {line}
-            </Paragraph>
-          ))
-        : null}
+      {text &&
+        text.split('\n').map((line) => (
+          <Paragraph key={line} gutterBottom={0}>
+            {line}
+          </Paragraph>
+        ))}
 
       {files.length > 0 ? (
         <ImageWrapper>

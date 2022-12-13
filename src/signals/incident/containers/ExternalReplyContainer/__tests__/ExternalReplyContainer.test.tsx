@@ -35,22 +35,27 @@ describe('ExternalReplyContainer', () => {
   describe('active questionnaire', () => {
     beforeAll(() => {
       mockedUseParams.mockImplementation(() => ({
-        uuid: 'valid-session-uuid',
+        id: 'forward-to-external-questionnaire',
       }))
     })
 
-    it('renders the incident reply form correctly', async () => {
+    it('renders the external reply form correctly', async () => {
       render(withAppContext(<ExternalReplyContainer />))
 
       screen.getByTestId('loadingIndicator')
 
       await waitFor(() => {
-        screen.getByRole('heading', { name: 'Aanvullende informatie' })
-        screen.getByRole('heading', { name: 'Uw melding' })
-        screen.getByText('Nummer: SIA-1234')
-        screen.getByText('Gemeld op: 26 juli 2021, 17:43 uur')
-        screen.getByRole('textbox', { name: 'Wat voor kleur heeft de auto?' })
-        screen.getByLabelText(/Foto's toevoegen/)
+        screen.getByRole('heading', { name: 'Melding reactie' })
+        screen.getByRole('heading', { name: 'De melding' })
+        screen.getByText('Nummer: SIG-001')
+        screen.getByText('Centrum')
+        screen.getByText(/herengracht 242b/i)
+        screen.getByText(/kunnen jullie deze stoeptegel vervangen\?/i)
+        screen.getByRole('img', { name: /cheesecake\.jpg/i })
+        screen.getByLabelText(
+          /kunt u omschrijven of en hoe de melding is opgepakt\? u mag daarbij ook een foto sturen\./i
+        )
+        screen.getByText(/Foto's toevoegen/)
         screen.getByRole('button', { name: 'Verstuur' })
         expect(screen.queryByTestId('loadingIndicator')).not.toBeInTheDocument()
       })
@@ -60,7 +65,7 @@ describe('ExternalReplyContainer', () => {
       render(withAppContext(<ExternalReplyContainer />))
 
       await waitFor(() => {
-        screen.getByRole('heading', { name: 'Aanvullende informatie' })
+        screen.getByRole('heading', { name: 'Melding reactie' })
       })
 
       userEvent.click(screen.getByRole('button', { name: 'Verstuur' }))
@@ -76,15 +81,15 @@ describe('ExternalReplyContainer', () => {
       render(withAppContext(<ExternalReplyContainer />))
 
       await waitFor(() => {
-        screen.getByRole('heading', { name: 'Aanvullende informatie' })
+        screen.getByRole('heading', { name: 'Melding reactie' })
       })
 
       act(() => {
         userEvent.type(
-          screen.getByRole('textbox', {
-            name: 'Wat voor kleur heeft de auto?',
-          }),
-          'Rood'
+          screen.getByLabelText(
+            /kunt u omschrijven of en hoe de melding is opgepakt\? u mag daarbij ook een foto sturen\./i
+          ),
+          'Het is weer helemaal mooi'
         )
       })
       userEvent.click(screen.getByRole('button', { name: 'Verstuur' }))
@@ -99,15 +104,15 @@ describe('ExternalReplyContainer', () => {
       render(withAppContext(<ExternalReplyContainer />))
 
       await waitFor(() => {
-        screen.getByRole('heading', { name: 'Aanvullende informatie' })
+        screen.getByRole('heading', { name: 'Melding reactie' })
       })
 
       act(() => {
         userEvent.type(
-          screen.getByRole('textbox', {
-            name: 'Wat voor kleur heeft de auto?',
-          }),
-          'Rood'
+          screen.getByLabelText(
+            /kunt u omschrijven of en hoe de melding is opgepakt\? u mag daarbij ook een foto sturen\./i
+          ),
+          'De melding is verholpen'
         )
       })
 
@@ -129,28 +134,30 @@ describe('ExternalReplyContainer', () => {
       render(withAppContext(<ExternalReplyContainer />))
 
       await waitFor(() => {
-        screen.getByRole('heading', { name: 'Aanvullende informatie' })
+        screen.getByRole('heading', { name: 'Melding reactie' })
       })
 
       act(() => {
         userEvent.type(
-          screen.getByRole('textbox', {
-            name: 'Wat voor kleur heeft de auto?',
-          }),
-          'Rood'
+          screen.getByLabelText(
+            /kunt u omschrijven of en hoe de melding is opgepakt\? u mag daarbij ook een foto sturen\./i
+          ),
+          'De melding is verholpen'
         )
       })
 
       mockRequestHandler({
         status: 500,
         method: 'post',
-        url: API.QA_ANSWER,
+        url: API.QA_ANSWERS,
         body: {
           detail: 'Something went wrong',
         },
       })
 
-      userEvent.click(screen.getByRole('button', { name: 'Verstuur' }))
+      act(() => {
+        userEvent.click(screen.getByRole('button', { name: 'Verstuur' }))
+      })
 
       await waitFor(() => {
         expect(mockedGlobalNotification).toHaveBeenCalledWith(
@@ -166,7 +173,7 @@ describe('ExternalReplyContainer', () => {
   describe('expired questionnaire', () => {
     beforeAll(() => {
       mockedUseParams.mockImplementation(() => ({
-        uuid: 'expired',
+        id: 'expired',
       }))
     })
     it('should render the correct message', async () => {
@@ -182,7 +189,7 @@ describe('ExternalReplyContainer', () => {
   describe('previously submitted questionnaire', () => {
     beforeAll(() => {
       mockedUseParams.mockImplementation(() => ({
-        uuid: 'locked',
+        id: 'locked',
       }))
     })
 
@@ -198,29 +205,10 @@ describe('ExternalReplyContainer', () => {
     })
   })
 
-  describe('questionnaire when incident status was changed', () => {
-    beforeAll(() => {
-      mockedUseParams.mockImplementation(() => ({
-        uuid: 'invalidated',
-      }))
-    })
-
-    it('should render the correct message', async () => {
-      render(withAppContext(<ExternalReplyContainer />))
-
-      await waitFor(() => {
-        screen.getByRole('heading', {
-          name: constants.INACCESSIBLE_TITLE,
-        })
-        screen.getByText(constants.INACCESSIBLE_CONTENT)
-      })
-    })
-  })
-
   describe('invalid uuid', () => {
     beforeAll(() => {
       mockedUseParams.mockImplementation(() => ({
-        uuid: 'invalid-uuid',
+        id: 'invalid-uuid',
       }))
     })
 

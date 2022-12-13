@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (C) 2022 Vereniging van Nederlandse Gemeenten
 /**
- * Possible http status codes
+ * Questionnaire session error responses
  */
-export const EXPIRED_STATUS = 410
-export const INCORRECT_STATUS_STATUS = 500
-export const SUBMITTED_PREVIOUSLY_STATUS = 410
+export const EXPIRED = 'Expired!'
+export const SUBMITTED_PREVIOUSLY = 'Already used!'
 
 /**
  * Notices
@@ -23,5 +22,7 @@ export const SUBMITTED_TITLE = 'Bedankt'
 export const SUBMITTED_CONTENT =
   'Bedankt voor het invullen van het actieformulier. Uw informatie helpt ons bij het verwerken van de melding.'
 
-export const GENERIC_ERROR_TITLE = 'Er is iets misgegaan'
-export const GENERIC_ERROR_CONTENT = 'Probeer het later nog eens.'
+export const GENERIC_ERROR_TITLE =
+  'Het versturen van het actieformulier is mislukt'
+export const GENERIC_ERROR_CONTENT =
+  'Probeer het nog eens of neem contact op met de gemeente'

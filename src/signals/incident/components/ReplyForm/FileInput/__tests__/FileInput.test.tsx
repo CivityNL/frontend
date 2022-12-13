@@ -16,8 +16,8 @@ const WrappedFileInput: FunctionComponent = () => {
   return (
     <FileInput
       id="file-input"
-      label="Foo"
-      shortLabel="Bar"
+      label="Voeg een foto toe om de situatie te verduidelijken."
+      shortLabel="Foto toevoegen"
       control={control}
       trigger={trigger}
       errorMessage={errors['file-input']?.message}
@@ -29,7 +29,7 @@ describe('FileInput', () => {
   it('should render the wrapped FileInput component', () => {
     render(withAppContext(<WrappedFileInput />))
 
-    expect(screen.getByText('Foo')).toBeInTheDocument()
+    expect(screen.getByText('Foto toevoegen')).toBeInTheDocument()
     expect(
       screen.getByText('Voeg een foto toe om de situatie te verduidelijken.')
     ).toBeInTheDocument()
@@ -42,7 +42,7 @@ describe('FileInput', () => {
       const file = new File(['hello'], 'hello.png', { type: 'image/png' })
       Object.defineProperty(file, 'size', { value: 1 })
 
-      const fileInput = screen.getByLabelText(/Foo/)
+      const fileInput = screen.getByLabelText(/Foto toevoegen/)
       userEvent.upload(fileInput, file)
 
       await waitFor(() => {
@@ -56,7 +56,7 @@ describe('FileInput', () => {
       const file = new File(['hello'], 'hello.png', { type: 'image/png' })
       Object.defineProperty(file, 'size', { value: Infinity })
 
-      const fileInput = screen.getByLabelText(/Foo/)
+      const fileInput = screen.getByLabelText(/Foto toevoegen/)
       userEvent.upload(fileInput, file)
 
       await waitFor(() => {
@@ -67,7 +67,7 @@ describe('FileInput', () => {
     it('validates max number of files', async () => {
       render(withAppContext(<WrappedFileInput />))
 
-      const fileInput = screen.getByLabelText(/Foo/)
+      const fileInput = screen.getByLabelText(/Foto toevoegen/)
       const files = [
         new File(['hello1'], 'hello1.png', { type: 'image/png' }),
         new File(['hello2'], 'hello2.png', { type: 'image/png' }),
@@ -92,7 +92,7 @@ describe('FileInput', () => {
       const file = new File(['hello'], 'hello.png', { type: 'image/bar' })
       Object.defineProperty(file, 'size', { value: 50000 })
 
-      const fileInput = screen.getByLabelText(/Foo/)
+      const fileInput = screen.getByLabelText(/Foto toevoegen/)
       userEvent.upload(fileInput, file)
 
       await waitFor(() => {

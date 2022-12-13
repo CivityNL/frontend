@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (C) 2022 Vereniging van Nederlandse Gemeenten
 import { themeSpacing } from '@amsterdam/asc-ui'
 import styled from 'styled-components'
 
@@ -40,7 +42,7 @@ type LocationProps = {
     address_text?: string | null
     geometrie: {
       coordinates: [number, number]
-      type: 'Point'
+      type: string
     }
     stadsdeel: string | null
   }
@@ -71,12 +73,16 @@ const Location = ({ onClick, location }: LocationProps) => {
 
   return (
     <LocationSection>
-      <MapThumbnailButton onKeyDown={handleMapThumbnailKey} onClick={onClick}>
+      <MapThumbnailButton
+        data-testid="map-thumbnail-button"
+        onKeyDown={handleMapThumbnailKey}
+        onClick={onClick}
+      >
         <MapThumbnail value={{ geometrie: location.geometrie }} />
       </MapThumbnailButton>
       <div>
-        {address.map((addressItem) => (
-          <Paragraph>{addressItem}</Paragraph>
+        {address.map((addressItem, index) => (
+          <Paragraph key={index}>{addressItem}</Paragraph>
         ))}
       </div>
     </LocationSection>
