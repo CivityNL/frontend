@@ -12,7 +12,7 @@ type ExplanationSectionProps = {
   title: string
   text: string | null
   files?: File[]
-  onSelectFile: (file: File) => void
+  onSelectFile?: (file: File) => void
 }
 
 const ImageWrapper = styled.div`
@@ -39,16 +39,16 @@ const Section = styled.section`
   margin-bottom: ${themeSpacing(6)};
 `
 
-const ExplanationSection: React.FunctionComponent<ExplanationSectionProps> = ({
+const ExplanationSection = ({
   title,
   text,
   files = [],
   onSelectFile,
-}) => {
+}: ExplanationSectionProps) => {
   const handleImageKeyPress: (
     file: File
   ) => React.KeyboardEventHandler<HTMLElement> = (file) => (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && onSelectFile) {
       onSelectFile(file)
     }
   }
@@ -69,7 +69,11 @@ const ExplanationSection: React.FunctionComponent<ExplanationSectionProps> = ({
             <Image
               tabIndex={0}
               onKeyDown={handleImageKeyPress(file)}
-              onClick={() => onSelectFile(file)}
+              onClick={() => {
+                if (onSelectFile) {
+                  onSelectFile(file)
+                }
+              }}
               key={file.description}
               src={file.file}
               alt={file.description}
