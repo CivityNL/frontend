@@ -6,6 +6,8 @@ import styled from 'styled-components'
 import MapDetail from 'components/MapDetail'
 import { markerIcon } from 'shared/services/configuration/map-markers'
 
+import ExplanationSection from './components/ExplanationSection'
+
 export const Wrapper = styled.div`
   flex-direction: column;
   width: 100%;
@@ -14,6 +16,10 @@ export const Wrapper = styled.div`
 export const StyledHeading = styled(Heading)`
   margin-top: ${themeSpacing(10)};
   margin-bottom: ${themeSpacing(5)};
+`
+
+export const StyledExplanationSection = styled(ExplanationSection)`
+  margin-bottom: ${themeSpacing(1)};
 `
 
 export const MapRow = styled(Row)`

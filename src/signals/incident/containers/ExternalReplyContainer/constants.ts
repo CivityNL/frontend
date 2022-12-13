@@ -1,16 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (C) 2022 Vereniging van Nederlandse Gemeenten
 /**
- * Possible responses
+ * Possible http status codes
  */
 export const EXPIRED_STATUS = 410
-export const EXPIRED_DETAIL = 'Expired!'
-
 export const INCORRECT_STATUS_STATUS = 500
-export const INCORRECT_STATUS_DETAIL = 'associated signal not in state'
-
 export const SUBMITTED_PREVIOUSLY_STATUS = 410
-export const SUBMITTED_PREVIOUSLY_DETAIL = 'Already used!'
 
 /**
  * Notices

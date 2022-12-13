@@ -101,7 +101,7 @@ const useQuestionnaire = (id: string) => {
         formData.append('question_uuid', attachmentsQuestion.uuid)
 
         const response = await fetch(
-          `${configuration.QA_SESSIONS_ENDPOINT}${id}/attachments`,
+          questionnaireData._links['sia:post-attachments'].href,
           {
             body: formData,
             method: 'POST',
@@ -130,7 +130,7 @@ const useQuestionnaire = (id: string) => {
       )
 
       await submitQuestionnaire(
-        `${configuration.QA_SESSIONS_ENDPOINT}${id}/submit`
+        questionnaireData._links['sia:post-submit'].href
       )
     } catch (error) {
       setSubmitFormError(true)

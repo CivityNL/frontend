@@ -11,6 +11,12 @@ export interface Session {
     'sia:public-signal': {
       href: string
     }
+    'sia:post-attachments': {
+      href: string
+    }
+    'sia:post-submit': {
+      href: string
+    }
   }
   questionnaire_explanation: Explanation
   path_questions: Question[]
@@ -26,5 +32,6 @@ export interface Session {
       coordinates: [number, number]
       type: 'Point'
     }
+    stadsdeel: string | null
   }
 }

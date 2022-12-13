@@ -13,7 +13,14 @@ import Notice from '../../components/ReplyForm/Notice'
 import QuestionnaireComponent from '../../components/ReplyForm/Questionnaire'
 import ExplanationSection from './components/ExplanationSection'
 import Location from './components/Location'
-import { StyledHeading, Wrapper, Map, MapRow, QuestionnaireRow } from './styled'
+import {
+  StyledHeading,
+  Wrapper,
+  Map,
+  MapRow,
+  QuestionnaireRow,
+  StyledExplanationSection,
+} from './styled'
 import useQuestionnaire from './useQuestionnaire'
 
 const ExternalReplyContainer = () => {
@@ -61,7 +68,7 @@ const ExternalReplyContainer = () => {
           <Wrapper>
             <StyledHeading>{explanation.title}</StyledHeading>
 
-            <ExplanationSection
+            <StyledExplanationSection
               title={explanation.sections[0].header}
               text={explanation.sections[0].text}
             />

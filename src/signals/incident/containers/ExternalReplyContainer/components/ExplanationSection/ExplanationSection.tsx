@@ -1,4 +1,4 @@
-import { Heading, themeColor, themeSpacing } from '@amsterdam/asc-ui'
+import { Heading, themeSpacing } from '@amsterdam/asc-ui'
 import styled from 'styled-components'
 
 import Paragraph from 'components/Paragraph'
@@ -13,6 +13,7 @@ type ExplanationSectionProps = {
   text: string | null
   files?: File[]
   onSelectFile?: (file: File) => void
+  className?: string
 }
 
 const ImageWrapper = styled.div`
@@ -27,7 +28,7 @@ const Image = styled.img`
   object-fit: cover;
   :hover {
     cursor: pointer;
-    outline: 1px solid ${themeColor('tint', 'level6')};
+    filter: brightness(90%);
   }
 `
 
@@ -44,6 +45,7 @@ const ExplanationSection = ({
   text,
   files = [],
   onSelectFile,
+  className,
 }: ExplanationSectionProps) => {
   const handleImageKeyPress: (
     file: File
@@ -53,8 +55,9 @@ const ExplanationSection = ({
     }
   }
   return (
-    <Section>
+    <Section className={className}>
       <StyledHeading forwardedAs="h4">{title}</StyledHeading>
+
       {text
         ? text.split('\n').map((line) => (
             <Paragraph key={line} gutterBottom={0}>
@@ -63,7 +66,7 @@ const ExplanationSection = ({
           ))
         : null}
 
-      {files ? (
+      {files.length > 0 ? (
         <ImageWrapper>
           {files.map((file) => (
             <Image
