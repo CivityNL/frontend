@@ -38,7 +38,7 @@ export const LocationSection = styled.section`
 type LocationProps = {
   onClick: () => void
   location: {
-    address: AddressType
+    address: AddressType | null
     address_text?: string | null
     geometrie: {
       coordinates: [number, number]

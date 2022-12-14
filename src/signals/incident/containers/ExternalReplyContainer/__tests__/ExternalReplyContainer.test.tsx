@@ -32,7 +32,7 @@ jest.mock('react-router-dom', () => ({
 }))
 
 describe('ExternalReplyContainer', () => {
-  describe('active questionnaire', () => {
+  describe('questionnaire', () => {
     beforeAll(() => {
       mockedUseParams.mockImplementation(() => ({
         id: 'forward-to-external-questionnaire',
@@ -140,42 +140,140 @@ describe('ExternalReplyContainer', () => {
       })
     })
 
-    it('handles errors during submit', async () => {
-      render(withAppContext(<ExternalReplyContainer />))
+    describe('submit errors', () => {
+      it('handles error when uploading attachments', async () => {
+        render(withAppContext(<ExternalReplyContainer />))
 
-      await waitFor(() => {
-        screen.getByRole('heading', { name: 'Melding reactie' })
+        await waitFor(() => {
+          screen.getByRole('heading', { name: 'Melding reactie' })
+        })
+
+        act(() => {
+          userEvent.type(
+            screen.getByLabelText(
+              /kunt u omschrijven of en hoe de melding is opgepakt\? u mag daarbij ook een foto sturen\./i
+            ),
+            'De melding is verholpen'
+          )
+        })
+
+        // Upload file to file input
+        const fileInput = screen.getByLabelText(/Foto's toevoegen/)
+        const file = new File(['hello'], 'hello.png', { type: 'image/png' })
+        Object.defineProperty(file, 'size', { value: 1024 * 1024 + 1 }) // 1 MB
+        userEvent.upload(fileInput, file)
+
+        mockRequestHandler({
+          status: 500,
+          method: 'post',
+          url: API.QA_SESSIONS_ATTACHMENTS,
+          body: {
+            detail: 'Something went wrong',
+          },
+        })
+
+        act(() => {
+          userEvent.click(screen.getByRole('button', { name: 'Verstuur' }))
+        })
+
+        await waitFor(() => {
+          expect(mockedGlobalNotification).toHaveBeenCalledWith(
+            expect.objectContaining({
+              title: constants.GENERIC_ERROR_TITLE,
+              message: constants.GENERIC_ERROR_CONTENT,
+            })
+          )
+        })
       })
 
-      act(() => {
-        userEvent.type(
-          screen.getByLabelText(
-            /kunt u omschrijven of en hoe de melding is opgepakt\? u mag daarbij ook een foto sturen\./i
-          ),
-          'De melding is verholpen'
-        )
+      it('handles error when posting answers', async () => {
+        render(withAppContext(<ExternalReplyContainer />))
+
+        await waitFor(() => {
+          screen.getByRole('heading', { name: 'Melding reactie' })
+        })
+
+        act(() => {
+          userEvent.type(
+            screen.getByLabelText(
+              /kunt u omschrijven of en hoe de melding is opgepakt\? u mag daarbij ook een foto sturen\./i
+            ),
+            'De melding is verholpen'
+          )
+        })
+
+        mockRequestHandler({
+          status: 500,
+          method: 'post',
+          url: API.QA_ANSWERS,
+          body: {
+            detail: 'Something went wrong',
+          },
+        })
+
+        act(() => {
+          userEvent.click(screen.getByRole('button', { name: 'Verstuur' }))
+        })
+
+        await waitFor(() => {
+          expect(mockedGlobalNotification).toHaveBeenCalledWith(
+            expect.objectContaining({
+              title: constants.GENERIC_ERROR_TITLE,
+              message: constants.GENERIC_ERROR_CONTENT,
+            })
+          )
+        })
+
+        await waitFor(() => {
+          expect(
+            screen.queryByTestId('loadingIndicator')
+          ).not.toBeInTheDocument()
+        })
       })
 
-      mockRequestHandler({
-        status: 500,
-        method: 'post',
-        url: API.QA_ANSWERS,
-        body: {
-          detail: 'Something went wrong',
-        },
-      })
+      it('handles error when submitting questionnaire', async () => {
+        render(withAppContext(<ExternalReplyContainer />))
 
-      act(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Verstuur' }))
-      })
+        await waitFor(() => {
+          screen.getByRole('heading', { name: 'Melding reactie' })
+        })
 
-      await waitFor(() => {
-        expect(mockedGlobalNotification).toHaveBeenCalledWith(
-          expect.objectContaining({
-            title: constants.GENERIC_ERROR_TITLE,
-            message: constants.GENERIC_ERROR_CONTENT,
-          })
-        )
+        act(() => {
+          userEvent.type(
+            screen.getByLabelText(
+              /kunt u omschrijven of en hoe de melding is opgepakt\? u mag daarbij ook een foto sturen\./i
+            ),
+            'De melding is verholpen'
+          )
+        })
+
+        mockRequestHandler({
+          status: 500,
+          method: 'post',
+          url: API.QA_SUBMIT,
+          body: {
+            detail: 'Something went wrong',
+          },
+        })
+
+        act(() => {
+          userEvent.click(screen.getByRole('button', { name: 'Verstuur' }))
+        })
+
+        await waitFor(() => {
+          expect(mockedGlobalNotification).toHaveBeenCalledWith(
+            expect.objectContaining({
+              title: constants.GENERIC_ERROR_TITLE,
+              message: constants.GENERIC_ERROR_CONTENT,
+            })
+          )
+        })
+
+        await waitFor(() => {
+          expect(
+            screen.queryByTestId('loadingIndicator')
+          ).not.toBeInTheDocument()
+        })
       })
     })
 
@@ -222,13 +320,11 @@ describe('ExternalReplyContainer', () => {
     })
   })
 
-  describe('expired questionnaire', () => {
-    beforeAll(() => {
+  describe('fetching questionnaire fails', () => {
+    it('should handle expired questionnaire', async () => {
       mockedUseParams.mockImplementation(() => ({
         id: 'expired',
       }))
-    })
-    it('should render the correct message', async () => {
       render(withAppContext(<ExternalReplyContainer />))
 
       await waitFor(() => {
@@ -236,16 +332,12 @@ describe('ExternalReplyContainer', () => {
         screen.getByText(constants.INACCESSIBLE_CONTENT)
       })
     })
-  })
 
-  describe('previously submitted questionnaire', () => {
-    beforeAll(() => {
+    it('should handle previously submitted questionnaire', async () => {
       mockedUseParams.mockImplementation(() => ({
         id: 'locked',
       }))
-    })
 
-    it('should render the correct message', async () => {
       render(withAppContext(<ExternalReplyContainer />))
 
       await waitFor(() => {
@@ -255,16 +347,12 @@ describe('ExternalReplyContainer', () => {
         screen.getByText(constants.SUBMITTED_PREVIOUSLY_CONTENT)
       })
     })
-  })
 
-  describe('invalid uuid', () => {
-    beforeAll(() => {
+    it('should handle invalid questionnaire id', async () => {
       mockedUseParams.mockImplementation(() => ({
         id: 'invalid-uuid',
       }))
-    })
 
-    it('should render the correct message', async () => {
       render(withAppContext(<ExternalReplyContainer />))
 
       await waitFor(() => {

@@ -42,6 +42,23 @@ describe('Location', () => {
     ).toBeInTheDocument()
   })
 
+  it('renders fallback message when address is not available', () => {
+    const locationWithoutAddress = {
+      ...location,
+      address: null,
+    }
+
+    render(
+      withAppContext(
+        <Location location={locationWithoutAddress} onClick={jest.fn()} />
+      )
+    )
+
+    expect(
+      screen.getByText('Locatie is gepind op de kaart')
+    ).toBeInTheDocument()
+  })
+
   it('handles clicking on the map thumbnail', () => {
     const clickSpy = jest.fn()
     render(withAppContext(<Location onClick={clickSpy} location={location} />))

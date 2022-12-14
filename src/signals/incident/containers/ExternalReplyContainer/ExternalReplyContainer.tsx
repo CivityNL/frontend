@@ -79,6 +79,7 @@ const ExternalReplyContainer = () => {
               text={explanation.sections[0].text}
             />
 
+            {/* show location between first and second explanation section */}
             {location && (
               <Location location={location} onClick={() => setShowMap(true)} />
             )}
