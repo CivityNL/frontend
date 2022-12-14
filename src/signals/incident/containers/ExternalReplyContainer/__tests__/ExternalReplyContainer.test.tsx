@@ -45,18 +45,28 @@ describe('ExternalReplyContainer', () => {
       screen.getByTestId('loadingIndicator')
 
       await waitFor(() => {
+        // Explanation title
         screen.getByRole('heading', { name: 'Melding reactie' })
+
+        // First explanation section
         screen.getByRole('heading', { name: 'De melding' })
         screen.getByText('Nummer: SIG-001')
+
+        // Location
         screen.getByText('Centrum')
         screen.getByText(/herengracht 242b/i)
+
+        // Second explanation section
         screen.getByText(/kunnen jullie deze stoeptegel vervangen\?/i)
         screen.getByRole('img', { name: /cheesecake\.jpg/i })
+
+        // Questionnaire
         screen.getByLabelText(
           /kunt u omschrijven of en hoe de melding is opgepakt\? u mag daarbij ook een foto sturen\./i
         )
         screen.getByText(/Foto's toevoegen/)
         screen.getByRole('button', { name: 'Verstuur' })
+
         expect(screen.queryByTestId('loadingIndicator')).not.toBeInTheDocument()
       })
     })
@@ -166,6 +176,48 @@ describe('ExternalReplyContainer', () => {
             message: constants.GENERIC_ERROR_CONTENT,
           })
         )
+      })
+    })
+
+    describe('location', () => {
+      it('handles showing and hiding the interactive map', async () => {
+        render(withAppContext(<ExternalReplyContainer />))
+
+        await waitFor(() => {
+          screen.getByRole('heading', { name: 'Melding reactie' })
+        })
+
+        act(() => {
+          userEvent.click(screen.getByTestId('map-thumbnail-button'))
+        })
+
+        expect(screen.getByTestId('interactive-map')).toBeInTheDocument()
+
+        userEvent.click(screen.getByTestId('closeButton'))
+
+        expect(screen.queryByTestId('interactive-map')).not.toBeInTheDocument()
+      })
+    })
+
+    describe('attachments viewer', () => {
+      it('handles showing and hiding the attachments viewer', async () => {
+        render(withAppContext(<ExternalReplyContainer />))
+
+        await waitFor(() => {
+          screen.getByRole('heading', { name: 'Melding reactie' })
+        })
+
+        userEvent.click(screen.getByRole('img', { name: /cheesecake\.jpg/i }))
+
+        expect(
+          screen.getByTestId('attachment-viewer-image')
+        ).toBeInTheDocument()
+
+        userEvent.click(screen.getByTestId('closeBtn'))
+
+        expect(
+          screen.queryByTestId('attachment-viewer-image')
+        ).not.toBeInTheDocument()
       })
     })
   })

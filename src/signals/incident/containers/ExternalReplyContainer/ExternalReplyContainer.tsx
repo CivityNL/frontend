@@ -101,7 +101,7 @@ const ExternalReplyContainer = () => {
       </QuestionnaireRow>
 
       {showMap && location && (
-        <MapRow>
+        <MapRow data-testid="interactive-map">
           <Map value={{ geometrie: location.geometrie }} />
           <CloseButton close={() => setShowMap(false)} />
         </MapRow>
