@@ -1,0 +1,187 @@
+{
+  "apiBaseUrl": "https://api.tst-oss.slimmelden.nl",
+  "areaTypeCodeForDistrict": "district",
+  "featureFlags": {
+    "appMode": false,
+    "assignSignalToDepartment": false,
+    "assignSignalToEmployee": false,
+    "enableAmsterdamSpecificOverigCategories": false,
+    "enableCsvExport": false,
+    "enableMultipleKtoAnswers": false,
+    "enableMyIncidents": false,
+    "enableNearIncidents": false,
+    "enablePublicIncidentsMap": false,
+    "enablePublicSignalMap": false,
+    "enableReporter": false,
+    "fetchDistrictsFromBackend": false,
+    "fetchQuestionsFromBackend": false,
+    "mapFilter24Hours": false,
+    "reporterMailHandledNegativeContactEnabled": false,
+    "showThorButton": false,
+    "showVulaanControls": false,
+    "useProjectenSignalType": false,
+    "enableForwardIncidentToExternal": false,
+    "showMainCategories": false,
+    "showStandardTextAdminV1": true,
+    "showStandardTextAdminV2": false,
+    "disableClosingCategoryOverigOverig": false,
+    "showContactEdit": false
+  },
+  "head": {
+    "androidIcon": "/icon_192x192.png",
+    "backgroundColor": "#ff0000",
+    "favicon": "/favicon.png",
+    "iosIcon": "/icon_180x180.png",
+    "statusBarStyle": "default",
+    "themeColor": "#fff"
+  },
+  "language": {
+    "consentToContactSharing": "Ja, ik geef Signalen toestemming om mijn contactgegevens te delen met andere organisaties, als dat nodig is om mijn melding goed op te lossen.",
+    "district": "Wijk",
+    "headerTitle": "",
+    "helpText": "Wij zijn bereikbaar van maandag tot en met vrijdag van 08.00 tot 18.00 uur.",
+    "helpTextHeader": "Lukt het niet om een melding te doen? Bel het telefoonnummer [070-373 8393](tel:+31703738393)",
+    "logoDescription": "Logo gemeente",
+    "mapDescription": "Weet u het adres niet, bel dan 070-373 8393 om telefonisch de melding te maken.",
+    "phoneNumber": "070-373 8393",
+    "shortTitle": "Signalen",
+    "siteAddress": "signalen.org",
+    "siteTitle": "Signalen",
+    "smallHeaderTitle": "Signalen",
+    "title": "Signalen",
+    "urgentContactInfo": "Voor spoedeisende zaken kunt u ook telefonisch contact opnemen."
+  },
+  "links": {
+    "about": "",
+    "accessibility": "",
+    "help": "https://signalen.org/",
+    "home": "https://signalen.org/",
+    "privacy": "https://vng.nl/privacyverklaring-vereniging-van-nederlandse-gemeenten"
+  },
+  "logo": {
+    "url": "/assets/images/signalen-slimmelden-sandbox-logo.png",
+    "width": "153px",
+    "height": "68px",
+    "smallWidth": "100px",
+    "smallHeight": "44px"
+  },
+  "map": {
+    "municipality": "oss",
+    "options": {
+      "crs": "EPSG:3857",
+      "center": [
+        51.78154937392116,
+        5.526405002892312
+      ],
+      "maxBounds": [
+        [
+          51.72586627542168,
+          5.353514362603138
+        ],
+        [
+          51.830750956526195,
+          5.711229945490516
+        ]
+      ],
+      "maxNumberOfAssets": {
+        "straatverlichting": 3,
+        "klokken": 1,
+        "afvalContainer": 5,
+        "eikenProcessierups": 5
+      },
+      "maxZoom": 20,
+      "minZoom": 8,
+      "zoom": 12
+    },
+    "optionsBackOffice": {
+      "maxZoom": 20,
+      "minZoom": 7,
+      "zoom": 7
+    },
+    "optionsAreaMap": {
+      "focusRadiusMeters": 50,
+      "zoom": 14,
+      "maxZoom": 15
+    },
+    "optionsOverviewMap": {
+      "flyToMinZoom": 11
+    },
+    "optionsSummaryMap": {
+      "zoom": 12
+    },
+    "optionsIncidentMap": {
+      "zoom": 9,
+      "flyToMinZoom": 12,
+      "flyToMaxZoom": 14
+    },
+    "optionsMapInput": {
+      "zoom": 14
+    },
+    "optionsIncidentDetailLocation": {
+      "zoom": 9
+    },
+    "optionsAssetSelector": {
+      "assetsZoom": 13,
+      "locationZoom": 14
+    },
+    "optionsMyIncidentsMap": {
+      "zoom": 14
+    },
+    "optionsExternalReplyLocation": {
+      "zoom": 9
+    },
+    "optionsExternalReplyMap": {
+      "zoom": 10
+    },
+    "tiles": {
+      "args": [
+        "https://api.maptiler.com/maps/nl-cartiqo-topo/256/{z}/{x}/{y}.png?key=TJFSqk8afq7jml604BGZ"
+      ],
+      "options": {
+        "attribution": "Kaartgegevens &copy; <a href=\"https://cartiqo.nl\">Cartiqo</a> &copy; <a href=\"https://maptiler.com/copyright\">MapTiler</a> &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",
+        "maxZoom": 20,
+        "maxNativeZoom": 20,
+        "tms": false
+      }
+    },
+    "layers": {
+      "ovl": "https://tst-ckan.dataplatform.nl/geoserver/workspace_datastore_ckan_dataplatform_nl/ckan_4d16a6a8-7bd5-454b-9531-2785974004ea/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=workspace_datastore_ckan_dataplatform_nl%3Ackan_4d16a6a8-7bd5-454b-9531-2785974004ea&maxFeatures=50&SRSNAME=urn:ogc:def:crs:EPSG::4326&outputFormat=application/json"
+    },
+    "pdok": {
+      "suggest": "https://api.pdok.nl/bzk/locatieserver/search/v3_1/suggest",
+      "reverse": "https://api.pdok.nl/bzk/locatieserver/search/v3_1/reverse"
+    }
+  },
+  "oidc": {
+    "authEndpoint": "https://dex.tst-oss.slimmelden.nl/auth",
+    "clientId": "signals",
+    "responseType": "id_token",
+    "scope": "openid email profile"
+  },
+  "theme": {
+    "colors": {
+      "primary": {
+        "main": "#004699",
+        "dark": "#00387a"
+      },
+      "secondary": {
+        "main": "#1d6b34",
+        "dark": "#124320"
+      },
+      "support": {
+        "valid": "#00a03c",
+        "invalid": "#ec0000",
+        "focus": "#fec813"
+      },
+      "error": {
+        "main": "#ec0000"
+      }
+    }
+  },
+  "frontPageAlert": {
+    "text": ""
+  },
+  "additionalCode": {
+    "css": ""
+  }
+}
